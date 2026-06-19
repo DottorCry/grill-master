@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0054)file:///Users/cristian.monfrini/Downloads/index_2.html -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Grill Master">
 <meta name="theme-color" content="#e05c00">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="manifest" href="file:///Users/cristian.monfrini/Downloads/manifest.json">
+<link rel="apple-touch-icon" href="file:///Users/cristian.monfrini/Downloads/icons/icon-192.png">
 <title>🔥 Grill Master</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="stylesheet" href="./🔥 Grill Master_files/css2">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -144,7 +144,7 @@ body{background:var(--bg);color:var(--cream);font-family:'Inter',sans-serif;min-
 <div class="screen active" id="s-home">
   <div class="topbar">
     <h1>🔥 GRILL MASTER</h1>
-    <button class="icon-btn" onclick="go('s-storico')">📋</button>
+    <button class="icon-btn" onclick="go(&#39;s-storico&#39;)">📋</button>
   </div>
   <div class="scroll">
     <div class="hero">
@@ -153,16 +153,34 @@ body{background:var(--bg);color:var(--cream);font-family:'Inter',sans-serif;min-
       <p>Seleziona un template o riprendi una grigliata</p>
     </div>
     <div class="sec-label">Nuova grigliata</div>
-    <div id="tplList"></div>
+    <div id="tplList">
+    <div class="card featured" onclick="startSetup(&#39;classica&#39;)">
+      <div class="card-icon">🔥</div>
+      <div class="card-body">
+        <div class="card-title">Grigliata Classica</div>
+        <div class="card-sub">Costine 3-2-1, lollipop pancetta, filetti, salamelle, picanha, costata, arrosticini</div>
+        <div class="tags"><span class="tag">BBQ a gas</span><span class="tag">Carni miste</span><span class="tag">6h prep</span></div>
+      </div>
+      <div class="card-arrow">›</div>
+    </div>
+    <div class="card " onclick="startSetup(&#39;veloce&#39;)">
+      <div class="card-icon">⚡</div>
+      <div class="card-body">
+        <div class="card-title">Grigliata Veloce</div>
+        <div class="card-sub">Salamelle, arrosticini, costine precotte — tutto pronto in 1 ora</div>
+        <div class="tags"><span class="tag">Rapida</span><span class="tag">Poca prep</span><span class="tag">1h</span></div>
+      </div>
+      <div class="card-arrow">›</div>
+    </div></div>
     <div class="sec-label">Ultime grigliate</div>
-    <div id="recentList"></div>
+    <div id="recentList"><div class="empty"><div class="empty-ico">📋</div><p>Nessuna grigliata ancora.<br>Creane una dal template qui sopra!</p></div></div>
   </div>
 </div>
 
 <!-- SETUP -->
 <div class="screen" id="s-setup">
   <div class="topbar">
-    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <button class="back-btn" onclick="go(&#39;s-home&#39;)">‹</button>
     <h1 id="setup-title">NUOVA GRIGLIATA</h1>
   </div>
   <div class="scroll">
@@ -170,25 +188,25 @@ body{background:var(--bg);color:var(--cream);font-family:'Inter',sans-serif;min-
     <div class="fg"><label>Data</label><input id="inp-date" type="date"></div>
     <div class="fg"><label>Ospiti</label><input id="inp-guests" type="text" placeholder="Es. 4 adulti + 4 bambini"></div>
     <div class="fg"><label>Orario servizio</label><input id="inp-time" type="time" value="12:30"></div>
-    <button class="btn-p" onclick="createEvent()">🔥 Crea grigliata</button>
-    <button class="btn-s" onclick="go('s-home')">Annulla</button>
+    <button class="btn-p" onclick="createGrigliata()">🔥 Crea grigliata</button>
+    <button class="btn-s" onclick="go(&#39;s-home&#39;)">Annulla</button>
   </div>
 </div>
 
 <!-- CHECKLIST -->
 <div class="screen" id="s-cl">
   <div class="topbar">
-    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <button class="back-btn" onclick="go(&#39;s-home&#39;)">‹</button>
     <h1 id="cl-title">GRIGLIATA</h1>
-    <button class="icon-btn" onclick="go('s-storico')">📋</button>
+    <button class="icon-btn" onclick="go(&#39;s-storico&#39;)">📋</button>
   </div>
   <div class="ev-hdr">
     <div class="ev-meta" id="cl-meta"></div>
     <div class="ev-bar"><div class="ev-fill" id="cl-prog" style="width:0%"></div></div>
   </div>
   <div class="tabs">
-    <button class="tab on" id="tab-v" onclick="showTab('v')">📋 VENERDÌ</button>
-    <button class="tab" id="tab-s" onclick="showTab('s')">⏰ GIORNO</button>
+    <button class="tab on" id="tab-v" onclick="showTab(&#39;v&#39;)">📋 VENERDÌ</button>
+    <button class="tab" id="tab-s" onclick="showTab(&#39;s&#39;)">⏰ GIORNO</button>
   </div>
   <div class="scroll" id="cl-body"></div>
 </div>
@@ -196,7 +214,7 @@ body{background:var(--bg);color:var(--cream);font-family:'Inter',sans-serif;min-
 <!-- STORICO -->
 <div class="screen" id="s-storico">
   <div class="topbar">
-    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <button class="back-btn" onclick="go(&#39;s-home&#39;)">‹</button>
     <h1>STORICO</h1>
   </div>
   <div class="scroll" id="storico-body"></div>
@@ -434,7 +452,7 @@ function startSetup(tid) {
   go('s-setup');
 }
 
-function createEvent() {
+function createGrigliata() {
   const t = findTpl(pendingTid);
   const ev = {
     id: Date.now().toString(), tid: pendingTid,
@@ -659,5 +677,6 @@ renderHome();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
 </script>
-</body>
-</html>
+
+
+</body></html>
