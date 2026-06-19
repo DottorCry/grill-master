@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grill Master">
+<meta name="theme-color" content="#e05c00">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>🔥 Grill Master</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#111008;--card:#251d08;--card2:#2e2410;
+  --ember:#e05c00;--amber:#f59e0b;--gold:#fbbf24;--cream:#f5e6c8;
+  --muted:#7a6a4a;--dim:#2e2410;--done-bg:#1a1808;--done-text:#4a4028;
+  --green:#22c55e;--red:#ef4444;--r:10px;
+}
+body{background:var(--bg);color:var(--cream);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:8px;padding:env(safe-area-inset-top,14px) 16px 10px;padding-top:max(env(safe-area-inset-top),14px);position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--dim);}
+.topbar h1{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;color:var(--gold);flex:1;}
+.back-btn{background:none;border:none;color:var(--amber);font-size:1.6rem;cursor:pointer;padding:2px 8px 2px 0;}
+.icon-btn{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:4px 6px;}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;padding:16px;padding-bottom:32px;}
+
+/* HERO */
+.hero{text-align:center;padding:24px 0 16px;}
+.hero .flame{font-size:3.2rem;}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--gold);margin-top:6px;}
+.hero p{color:var(--muted);font-size:0.82rem;margin-top:4px;}
+
+.sec-label{font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);padding:14px 16px;cursor:pointer;border:1.5px solid transparent;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.card:active{background:var(--card2);}
+.card.featured{border-color:var(--ember);}
+.card-icon{font-size:1.7rem;flex-shrink:0;}
+.card-body{flex:1;min-width:0;}
+.card-title{font-weight:600;font-size:0.93rem;color:var(--cream);}
+.card-sub{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+.card-arrow{color:var(--muted);}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.tag{background:var(--dim);color:var(--amber);border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:600;}
+
+/* PROGRESS RING */
+.ring{position:relative;width:36px;height:36px;flex-shrink:0;}
+.ring svg{transform:rotate(-90deg);}
+.ring-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:var(--gold);}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:0.72rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;}
+.fg input{width:100%;background:var(--card);border:1.5px solid var(--dim);border-radius:8px;padding:12px 14px;color:var(--cream);font-family:'Inter',sans-serif;font-size:0.93rem;outline:none;}
+.fg input:focus{border-color:var(--ember);}
+.btn-p{width:100%;padding:14px;background:var(--ember);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;margin-top:4px;}
+.btn-p:active{background:var(--amber);color:#111;}
+.btn-s{width:100%;padding:12px;background:transparent;color:var(--muted);border:1.5px solid var(--dim);border-radius:8px;font-weight:600;font-size:0.88rem;cursor:pointer;margin-top:8px;}
+
+/* EVENT HEADER */
+.ev-hdr{background:var(--card);padding:12px 16px;border-bottom:1px solid var(--dim);}
+.ev-meta{font-size:0.75rem;color:var(--muted);}
+.ev-bar{margin-top:8px;height:3px;background:var(--dim);border-radius:2px;overflow:hidden;}
+.ev-fill{height:100%;background:var(--ember);border-radius:2px;transition:width 0.3s;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--dim);background:var(--bg);}
+.tab{flex:1;padding:10px;background:none;border:none;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all 0.15s;}
+.tab.on{color:var(--ember);border-bottom-color:var(--ember);}
+
+/* CHECKLIST */
+.cl-sec{margin-bottom:12px;}
+.cl-sec-hdr{display:flex;align-items:center;gap:8px;padding:10px 0 6px;}
+.cl-sec-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;color:var(--gold);flex:1;}
+.cl-time{font-size:0.68rem;font-weight:700;color:var(--ember);letter-spacing:1px;}
+.cl-list{background:var(--card);border-radius:var(--r);overflow:hidden;}
+.cl-item{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border-bottom:1px solid var(--dim);cursor:pointer;user-select:none;transition:background 0.1s;}
+.cl-item:last-child{border-bottom:none;}
+.cl-item:active{background:var(--card2);}
+.cl-item.done{background:var(--done-bg);}
+.cl-item.done .cl-txt{color:var(--done-text);text-decoration:line-through;}
+.cl-box{width:21px;height:21px;border-radius:5px;border:2px solid var(--ember);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);}
+.cl-check{display:none;color:white;font-size:12px;font-weight:800;}
+.cl-item.done .cl-check{display:block;}
+.cl-body{flex:1;}
+.cl-txt{font-size:0.86rem;line-height:1.45;color:var(--cream);}
+.tbtn{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:5px 11px;background:var(--ember);color:white;border:none;border-radius:5px;font-size:0.76rem;font-weight:600;cursor:pointer;}
+.tbtn:active{background:var(--amber);color:#111;}
+
+/* TIMER OVERLAY */
+.t-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;align-items:center;justify-content:center;}
+.t-ov.on{display:flex;}
+.t-box{background:var(--card);border-radius:16px;padding:28px 32px;text-align:center;border:2px solid var(--ember);width:86%;max-width:300px;}
+.t-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--gold);margin-bottom:6px;}
+.t-bar{height:3px;background:var(--dim);border-radius:2px;margin-bottom:18px;overflow:hidden;}
+.t-fill{height:100%;background:var(--ember);border-radius:2px;transition:width 1s linear;}
+.t-time{font-family:'Bebas Neue',sans-serif;font-size:5rem;letter-spacing:4px;color:var(--cream);line-height:1;margin-bottom:20px;}
+.t-time.urg{color:var(--ember);}
+.t-btns{display:flex;gap:8px;justify-content:center;}
+.t-btns button{padding:10px 18px;border-radius:8px;border:none;font-weight:600;font-size:0.88rem;cursor:pointer;}
+.t-stop{background:var(--ember);color:white;}
+.t-close{background:var(--muted);color:white;}
+
+/* FLOATING */
+.ft{position:fixed;bottom:max(env(safe-area-inset-bottom),16px);right:16px;display:flex;flex-direction:column;gap:7px;z-index:100;}
+.ft-chip{background:var(--ember);color:white;padding:7px 13px;border-radius:18px;font-size:0.8rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(224,92,0,0.4);display:flex;align-items:center;gap:7px;}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--green);color:white;padding:9px 18px;border-radius:8px;font-size:0.83rem;font-weight:600;z-index:300;transition:transform 0.3s;white-space:nowrap;}
+.toast.on{transform:translateX(-50%) translateY(0);}
+
+/* MODAL */
+.m-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:250;align-items:flex-end;justify-content:center;}
+.m-ov.on{display:flex;}
+.m-box{background:var(--card);border-radius:16px 16px 0 0;padding:22px 18px max(env(safe-area-inset-bottom),32px);width:100%;max-width:480px;}
+.m-box h3{font-size:1rem;font-weight:700;margin-bottom:6px;}
+.m-box p{font-size:0.83rem;color:var(--muted);margin-bottom:18px;}
+.m-btns{display:flex;gap:8px;}
+.m-btns button{flex:1;padding:12px;border-radius:8px;border:none;font-weight:600;font-size:0.88rem;cursor:pointer;}
+.m-cancel{background:var(--dim);color:var(--cream);}
+.m-confirm{background:var(--red);color:white;}
+
+.empty{text-align:center;padding:44px 20px;color:var(--muted);}
+.empty-ico{font-size:2.8rem;margin-bottom:10px;}
+.empty p{font-size:0.86rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="topbar">
+    <h1>🔥 GRILL MASTER</h1>
+    <button class="icon-btn" onclick="go('s-storico')">📋</button>
+  </div>
+  <div class="scroll">
+    <div class="hero">
+      <div class="flame">🔥</div>
+      <h2>PRONTO A GRIGLIARE?</h2>
+      <p>Seleziona un template o riprendi una grigliata</p>
+    </div>
+    <div class="sec-label">Nuova grigliata</div>
+    <div id="tplList"></div>
+    <div class="sec-label">Ultime grigliate</div>
+    <div id="recentList"></div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="screen" id="s-setup">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <h1 id="setup-title">NUOVA GRIGLIATA</h1>
+  </div>
+  <div class="scroll">
+    <div class="fg"><label>Nome evento</label><input id="inp-name" type="text" placeholder="Es. Grigliata di Ferragosto"></div>
+    <div class="fg"><label>Data</label><input id="inp-date" type="date"></div>
+    <div class="fg"><label>Ospiti</label><input id="inp-guests" type="text" placeholder="Es. 4 adulti + 4 bambini"></div>
+    <div class="fg"><label>Orario servizio</label><input id="inp-time" type="time" value="12:30"></div>
+    <button class="btn-p" onclick="createEvent()">🔥 Crea grigliata</button>
+    <button class="btn-s" onclick="go('s-home')">Annulla</button>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="screen" id="s-cl">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <h1 id="cl-title">GRIGLIATA</h1>
+    <button class="icon-btn" onclick="go('s-storico')">📋</button>
+  </div>
+  <div class="ev-hdr">
+    <div class="ev-meta" id="cl-meta"></div>
+    <div class="ev-bar"><div class="ev-fill" id="cl-prog" style="width:0%"></div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="tab-v" onclick="showTab('v')">📋 VENERDÌ</button>
+    <button class="tab" id="tab-s" onclick="showTab('s')">⏰ GIORNO</button>
+  </div>
+  <div class="scroll" id="cl-body"></div>
+</div>
+
+<!-- STORICO -->
+<div class="screen" id="s-storico">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('s-home')">‹</button>
+    <h1>STORICO</h1>
+  </div>
+  <div class="scroll" id="storico-body"></div>
+</div>
+
+<!-- TIMER -->
+<div class="t-ov" id="t-ov">
+  <div class="t-box">
+    <div class="t-name" id="t-name">TIMER</div>
+    <div class="t-bar"><div class="t-fill" id="t-fill" style="width:100%"></div></div>
+    <div class="t-time" id="t-time">00:00</div>
+    <div class="t-btns">
+      <button class="t-stop" onclick="stopTimer()">⏹ Stop</button>
+      <button class="t-close" onclick="closeTimer()">✕ Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div class="ft" id="ft"></div>
+<div class="toast" id="toast"></div>
+
+<div class="m-ov" id="m-ov">
+  <div class="m-box">
+    <h3 id="m-title"></h3>
+    <p id="m-msg"></p>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeModal()">Annulla</button>
+      <button class="m-confirm" id="m-ok">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// TEMPLATES
+// ═══════════════════════════════════
+const TPL = [
+  {
+    id:'classica', icon:'🔥', name:'Grigliata Classica',
+    desc:'Costine 3-2-1, lollipop pancetta, filetti, salamelle, picanha, costata, arrosticini',
+    tags:['BBQ a gas','Carni miste','6h prep'],
+    v:[
+      {t:'🐖 Costine',i:[
+        {x:'Rimuovi la membrana argentata dal lato osseo'},
+        {x:'Applica rub a secco su tutti i lati: sale, pepe, paprika affumicata, aglio in polvere, cipolla in polvere, zucchero di canna'},
+        {x:'Avvolgi in pellicola trasparente → in frigo tutta la notte'},
+      ]},
+      {t:'🍗 Lollipop di pollo',i:[
+        {x:'Avvolgi ogni lollipop con una fetta di pancetta dal basso verso l\'osso'},
+        {x:'Fissa con uno stuzzicadenti se necessario'},
+        {x:'In frigo scoperti tutta la notte'},
+      ]},
+      {t:'🐷 Filetti di maiale',i:[
+        {x:'Avvolgi ogni filetto con una fetta di pancetta'},
+        {x:'Fissa con uno stuzzicadenti'},
+        {x:'In frigo scoperti tutta la notte'},
+      ]},
+      {t:'🥩 Picanha & Costata',i:[
+        {x:'Tampona con carta da cucina'},
+        {x:'Cospargi sale grosso abbondante su tutti i lati'},
+        {x:'Metti in frigo scoperti su gratella'},
+      ]},
+      {t:'🌭 Salamelle',i:[
+        {x:'Niente da fare → si prepara tutto il giorno della grigliata 🍺'},
+      ]},
+    ],
+    s:[
+      {tm:'06:00',t:'🕕 Sveglia & setup',i:[
+        {x:'Accendi il BBQ → target 120-130°C zona indiretta'},
+        {x:'Tira fuori le costine dal frigo'},
+      ]},
+      {tm:'06:30',t:'🕡 Costine fase 1 (3h)',i:[
+        {x:'Controlla temperatura BBQ: 120-130°C'},
+        {x:'Posiziona costine in zona indiretta, coperchio chiuso'},
+        {x:'Timer 3 ore → pronti per il foil alle 09:30', tr:180, tl:'🐖 Costine fase 1'},
+      ]},
+      {tm:'09:30',t:'🕙 Costine fase 2 · foil (2h)',i:[
+        {x:'Stendi il doppio foglio di alluminio'},
+        {x:'Adagia le costine, aggiungi 2-3 cucchiai di birra e 1 cucchiaio di miele'},
+        {x:'Chiudi bene il pacchetto — nessun liquido deve uscire'},
+        {x:'Rimetti in zona indiretta 120-130°C'},
+        {x:'Timer 2 ore → fase 3 alle 11:30', tr:120, tl:'🐖 Costine fase 2 (foil)'},
+      ]},
+      {tm:'10:00',t:'🕙 Prep lollipop',i:[
+        {x:'Togli lollipop dal frigo, asciuga con carta da cucina'},
+        {x:'Avvolgi i manici con doppio foglio di alluminio'},
+        {x:'Prepara vaschetta alluminio con birra, cipolla, salvia, aglio → tieni da parte'},
+      ]},
+      {tm:'10:30',t:'🕙 Lollipop + prep filetti',i:[
+        {x:'Metti lollipop in zona indiretta 170°C, coperchio chiuso'},
+        {x:'Timer 1h20 — ultimi 10 min zona diretta per crosticina pancetta', tr:80, tl:'🍗 Lollipop pollo'},
+        {x:'Togli filetti dal frigo, asciuga leggermente → tieni da parte'},
+      ]},
+      {tm:'10:45',t:'🕙 Picanha & Costata fuori frigo',i:[
+        {x:'Tira fuori picanha dal frigo → 1 ora a temperatura ambiente'},
+        {x:'Tira fuori costata dal frigo → 1 ora a temperatura ambiente'},
+        {x:'Rimuovi sale in eccesso da entrambe (non sciacquare)'},
+      ]},
+      {tm:'11:00',t:'🕚 Filetti di maiale',i:[
+        {x:'Zona diretta 250°C → 2-3 min per lato per sigillare'},
+        {x:'Poi zona indiretta 160°C fino a 65-68°C interno'},
+        {x:'Quando pronti → avvolgi in alluminio e tieni al caldo'},
+      ]},
+      {tm:'11:30',t:'🕚 Costine fase 3 + Salamelle',i:[
+        {x:'Togli costine dal foil → zona indiretta 130°C — crosticina naturale, no spennellature'},
+        {x:'Salamelle in zona indiretta 130°C — 10 min', tr:10, tl:'🌭 Salamelle fase 1'},
+        {x:'Vaschetta birra sul BBQ coperchio chiuso 15 min a 150°C', tr:15, tl:'🌭 Salamelle in birra'},
+        {x:'Salamelle zona diretta — 5 min per lato crosticina → target 70°C'},
+      ]},
+      {tm:'11:45',t:'🕚 Picanha',i:[
+        {x:'Aggiungi pepe nero al momento'},
+        {x:'Zona diretta 250°C+ → 3-4 min per lato per la crosta sul grasso'},
+        {x:'Zona indiretta fino a 52-54°C al sangue / 58°C media cottura'},
+        {x:'Riposo 5-8 min coperta con alluminio', tr:6, tl:'🥩 Riposo Picanha'},
+      ]},
+      {tm:'11:50',t:'🕚 Costata',i:[
+        {x:'Aggiungi pepe nero al momento'},
+        {x:'Zona diretta 250°C+ → 3-4 min per lato per la crosta'},
+        {x:'Zona indiretta fino a 52°C al sangue / 57°C media cottura'},
+        {x:'Riposo 5-8 min → taglia a 12:20', tr:6, tl:'🥩 Riposo Costata'},
+      ]},
+      {tm:'12:00',t:'🕛 Arrosticini',i:[
+        {x:'Zona diretta medio-alta 200°C — gira spesso'},
+        {x:'Timer 12 min — servire subito!', tr:12, tl:'🍢 Arrosticini'},
+      ]},
+      {tm:'12:30',t:'🍽️ SI MANGIA! 🎉',i:[
+        {x:'Buon appetito a tutti! 🥂'},
+      ]},
+    ]
+  },
+  {
+    id:'veloce', icon:'⚡', name:'Grigliata Veloce',
+    desc:'Salamelle, arrosticini, costine precotte — tutto pronto in 1 ora',
+    tags:['Rapida','Poca prep','1h'],
+    v:[
+      {t:'🌭 Salamelle',i:[{x:'Niente da fare — tutto il giorno della grigliata'}]},
+      {t:'🍢 Arrosticini',i:[{x:'Se neutri: olio EVO + sale + peperoncino il giorno stesso'}]},
+      {t:'🥩 Costine precotte',i:[
+        {x:'Acquista costine già precotte (sous vide o in busta)'},
+        {x:'Tienile in frigo fino al giorno della grigliata'},
+      ]},
+    ],
+    s:[
+      {tm:'Inizio',t:'🔥 Accensione',i:[{x:'Accendi il BBQ → target 200-220°C zona diretta'}]},
+      {tm:'+15 min',t:'🌭 Salamelle',i:[{x:'Zona diretta medio-bassa — gira spesso — 25-30 min', tr:27, tl:'🌭 Salamelle'}]},
+      {tm:'+20 min',t:'🥩 Costine precotte',i:[{x:'Zona diretta alta — 5-7 min per lato per la crosticina', tr:12, tl:'🥩 Costine finish'}]},
+      {tm:'+30 min',t:'🍢 Arrosticini',i:[{x:'Zona diretta 200°C — 10-12 min girando spesso', tr:11, tl:'🍢 Arrosticini'}]},
+      {tm:'Fine',t:'🍽️ SI MANGIA! 🎉',i:[{x:'Buon appetito! 🥂'}]},
+    ]
+  },
+];
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+const DB_KEY = 'gm_events_v1';
+let events = [];
+let cur = null;
+let curTab = 'v';
+let timers = {};
+let curTimer = null;
+
+function load() {
+  try { events = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); } catch(e) { events = []; }
+}
+function save() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(events)); } catch(e) {}
+}
+
+// ═══════════════════════════════════
+// NAV
+// ═══════════════════════════════════
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 's-home') renderHome();
+  if (id === 's-storico') renderStorico();
+}
+
+// ═══════════════════════════════════
+// HOME
+// ═══════════════════════════════════
+function renderHome() {
+  document.getElementById('tplList').innerHTML = TPL.map(t => `
+    <div class="card ${t.id==='classica'?'featured':''}" onclick="startSetup('${t.id}')">
+      <div class="card-icon">${t.icon}</div>
+      <div class="card-body">
+        <div class="card-title">${t.name}</div>
+        <div class="card-sub">${t.desc}</div>
+        <div class="tags">${t.tags.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </div>`).join('');
+
+  const recent = [...events].reverse().slice(0,5);
+  document.getElementById('recentList').innerHTML = recent.length === 0
+    ? `<div class="empty"><div class="empty-ico">📋</div><p>Nessuna grigliata ancora.<br>Creane una dal template qui sopra!</p></div>`
+    : recent.map(ev => {
+        const pct = pctDone(ev);
+        const tpl = findTpl(ev.tid);
+        return `
+          <div class="card" onclick="openEvent('${ev.id}')">
+            <div class="card-icon">${tpl?.icon||'🔥'}</div>
+            <div class="card-body">
+              <div class="card-title">${ev.name}</div>
+              <div class="card-sub">${ev.date?fmtDate(ev.date):''} ${ev.guests?'· '+ev.guests:''}</div>
+            </div>
+            ${ring(pct)}
+            <div class="card-arrow">›</div>
+          </div>`;
+      }).join('');
+}
+
+function ring(pct) {
+  const r=13, c=2*Math.PI*r, d=c*(pct/100);
+  return `<div class="ring"><svg width="36" height="36" viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="${r}" fill="none" stroke="#2e2410" stroke-width="4"/>
+    <circle cx="18" cy="18" r="${r}" fill="none" stroke="#e05c00" stroke-width="4" stroke-dasharray="${d} ${c}" stroke-linecap="round"/>
+  </svg><div class="ring-txt">${pct}%</div></div>`;
+}
+
+function fmtDate(d) { const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+
+// ═══════════════════════════════════
+// SETUP
+// ═══════════════════════════════════
+let pendingTid = null;
+function startSetup(tid) {
+  pendingTid = tid;
+  const t = findTpl(tid);
+  document.getElementById('setup-title').textContent = t.name.toUpperCase();
+  document.getElementById('inp-name').value = t.name;
+  document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('inp-guests').value = '';
+  go('s-setup');
+}
+
+function createEvent() {
+  const t = findTpl(pendingTid);
+  const ev = {
+    id: Date.now().toString(), tid: pendingTid,
+    name: document.getElementById('inp-name').value.trim() || t.name,
+    date: document.getElementById('inp-date').value,
+    guests: document.getElementById('inp-guests').value.trim(),
+    time: document.getElementById('inp-time').value,
+    createdAt: new Date().toISOString(),
+    checks: {}
+  };
+  t.v.forEach((sec,si) => sec.i.forEach((_,ii) => { ev.checks[`v_${si}_${ii}`] = false; }));
+  t.s.forEach((sec,si) => sec.i.forEach((_,ii) => { ev.checks[`s_${si}_${ii}`] = false; }));
+  events.push(ev);
+  save();
+  openEvent(ev.id);
+}
+
+// ═══════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════
+function openEvent(id) {
+  cur = events.find(e => e.id === id);
+  if (!cur) return;
+  document.getElementById('cl-title').textContent = cur.name.toUpperCase();
+  document.getElementById('cl-meta').textContent =
+    [cur.date?fmtDate(cur.date):'', cur.guests, cur.time?'Servizio '+cur.time:''].filter(Boolean).join(' · ');
+  showTab('v');
+  updProg();
+  go('s-cl');
+}
+
+function showTab(tab) {
+  curTab = tab;
+  document.getElementById('tab-v').classList.toggle('on', tab==='v');
+  document.getElementById('tab-s').classList.toggle('on', tab==='s');
+  renderCL();
+}
+
+function renderCL() {
+  if (!cur) return;
+  const t = findTpl(cur.tid);
+  const secs = curTab === 'v' ? t.v : t.s;
+  document.getElementById('cl-body').innerHTML = secs.map((sec,si) => `
+    <div class="cl-sec">
+      <div class="cl-sec-hdr">
+        <h3>${sec.t}</h3>
+        ${sec.tm ? `<span class="cl-time">${sec.tm}</span>` : ''}
+      </div>
+      <div class="cl-list">
+        ${sec.i.map((item,ii) => {
+          const key = `${curTab}_${si}_${ii}`;
+          const done = cur.checks[key];
+          return `
+            <div class="cl-item${done?' done':''}" data-key="${key}" onclick="toggle(this)">
+              <div class="cl-box"><span class="cl-check">✓</span></div>
+              <div class="cl-body">
+                <div class="cl-txt">${item.x}</div>
+                ${item.tr ? `<button class="tbtn" onclick="startTimer(event,${item.tr},'${item.tl}')">▶ Timer ${fmtM(item.tr)}</button>` : ''}
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggle(el) {
+  if (event.target.tagName === 'BUTTON') return;
+  const key = el.dataset.key;
+  cur.checks[key] = !cur.checks[key];
+  el.classList.toggle('done', cur.checks[key]);
+  save();
+  updProg();
+}
+
+function updProg() {
+  if (!cur) return;
+  const vals = Object.values(cur.checks||{});
+  const pct = vals.length ? Math.round(vals.filter(Boolean).length/vals.length*100) : 0;
+  document.getElementById('cl-prog').style.width = pct + '%';
+}
+
+function pctDone(ev) {
+  const vals = Object.values(ev.checks||{});
+  return vals.length ? Math.round(vals.filter(Boolean).length/vals.length*100) : 0;
+}
+
+function fmtM(m) { return m>=60 ? Math.floor(m/60)+'h'+(m%60?m%60+'m':'') : m+'min'; }
+
+// ═══════════════════════════════════
+// STORICO
+// ═══════════════════════════════════
+function renderStorico() {
+  const el = document.getElementById('storico-body');
+  if (!events.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">📭</div><p>Nessuna grigliata salvata ancora.</p></div>`;
+    return;
+  }
+  el.innerHTML = [...events].reverse().map(ev => {
+    const tpl = findTpl(ev.tid);
+    return `
+      <div class="card" onclick="openEvent('${ev.id}')">
+        <div class="card-icon">${tpl?.icon||'🔥'}</div>
+        <div class="card-body">
+          <div class="card-title">${ev.name}</div>
+          <div class="card-sub">${ev.date?fmtDate(ev.date):''} ${ev.guests?'· '+ev.guests:''} · ${pctDone(ev)}% completato</div>
+        </div>
+        <button style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:4px;" onclick="event.stopPropagation();confirmDel('${ev.id}')">🗑</button>
+      </div>`;
+  }).join('');
+}
+
+function confirmDel(id) {
+  modal('Elimina grigliata', 'Questa azione non può essere annullata.', () => {
+    events = events.filter(e => e.id !== id);
+    save();
+    renderStorico();
+    toast('Grigliata eliminata');
+  });
+}
+
+// ═══════════════════════════════════
+// TIMERS
+// ═══════════════════════════════════
+function startTimer(e, mins, label) {
+  e.stopPropagation();
+  const id = Date.now().toString();
+  const secs = mins * 60;
+  timers[id] = { label, remaining: secs, total: secs, interval: setInterval(() => tick(id), 1000) };
+  curTimer = id;
+  showTimerOverlay(id);
+  updFT();
+}
+
+function tick(id) {
+  if (!timers[id]) return;
+  timers[id].remaining--;
+  if (curTimer === id) updOverlay(id);
+  updFT();
+  if (timers[id].remaining <= 0) { clearInterval(timers[id].interval); timerEnd(id); }
+}
+
+function timerEnd(id) {
+  beep();
+  if (Notification.permission === 'granted')
+    new Notification('🔥 ' + (timers[id]?.label||'Timer'), { body: 'TEMPO SCADUTO! Controlla la griglia.' });
+  if (curTimer === id) document.getElementById('t-time').classList.add('urg');
+  setTimeout(() => { delete timers[id]; updFT(); if (curTimer===id) closeTimer(); }, 3000);
+}
+
+function beep() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [0,0.35,0.7].forEach(d => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=880; o.type='sine';
+      g.gain.setValueAtTime(0.5, ctx.currentTime+d);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+d+0.4);
+      o.start(ctx.currentTime+d); o.stop(ctx.currentTime+d+0.5);
+    });
+  } catch(e){}
+}
+
+function showTimerOverlay(id) {
+  curTimer = id;
+  document.getElementById('t-ov').classList.add('on');
+  updOverlay(id);
+}
+
+function updOverlay(id) {
+  if (!timers[id]) return;
+  const {label,remaining,total} = timers[id];
+  document.getElementById('t-name').textContent = label;
+  document.getElementById('t-time').textContent = fmt(remaining);
+  document.getElementById('t-time').classList.toggle('urg', remaining<=60);
+  document.getElementById('t-fill').style.width = (remaining/total*100)+'%';
+}
+
+function stopTimer() {
+  if (curTimer && timers[curTimer]) { clearInterval(timers[curTimer].interval); delete timers[curTimer]; updFT(); }
+  closeTimer();
+}
+
+function closeTimer() {
+  document.getElementById('t-ov').classList.remove('on');
+  document.getElementById('t-time').classList.remove('urg');
+  curTimer = null;
+}
+
+function updFT() {
+  document.getElementById('ft').innerHTML = Object.entries(timers).map(([id,t]) =>
+    `<div class="ft-chip" onclick="showTimerOverlay('${id}')">${t.label} <strong>${fmt(t.remaining)}</strong></div>`
+  ).join('');
+}
+
+function fmt(s) { return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+function findTpl(id) { return TPL.find(t=>t.id===id)||TPL[0]; }
+
+function modal(title, msg, cb) {
+  document.getElementById('m-title').textContent = title;
+  document.getElementById('m-msg').textContent = msg;
+  document.getElementById('m-ok').onclick = () => { cb(); closeModal(); };
+  document.getElementById('m-ov').classList.add('on');
+}
+function closeModal() { document.getElementById('m-ov').classList.remove('on'); }
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 2500);
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+load();
+renderHome();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+</script>
+</body>
+</html>
